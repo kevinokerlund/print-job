@@ -1,0 +1,26 @@
+{
+  "name": "print-div",
+  "version": "1.0.0",
+  "description": "Print a single HTML container",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kevin-Okerlund/print-div.git"
+  },
+  "author": "Kevin Okerlund",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kevin-Okerlund/print-div/issues"
+  },
+  "homepage": "https://github.com/Kevin-Okerlund/print-div#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-jshint": "^1.11.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.2.0"
+  }
+}
