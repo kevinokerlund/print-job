@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Print A Div</title>
+
+	<style>
+		div {
+			border: solid 1px red;
+			margin: 5px;
+			padding: 3px;
+		}
+		
+		@media print {
+			div {
+				border: none;
+				margin: 0;
+				padding: 0;
+			}
+		}
+	</style>
+
+	<script src="src/div-printer.js"></script>
+</head>
+<body class="">
+
+<div>
+	<p>This should not print.</p>
+</div>
+<div>
+	<p>This should not print.</p>
+
+	<div>
+		<div>
+			<p>This should not print.</p>
+
+			<div>
+				<p>This should not print.</p>
+			</div>
+		</div>
+		<div id="printMe">
+			<p>Print this the first time.</p>
+		</div>
+	</div>
+</div>
+<p id="print2">Print this the second time.</p>
+
+<script>
+	var test = new DivPrinter('#printMe')
+		.beforePrint(function () {
+			console.log('Before Print 1');
+		})
+		.afterPrint(function () {
+			console.log('After Print 1');
+		})
+		.print();
+
+	var test2 = new DivPrinter('#print2')
+		.beforePrint(function () {
+			console.log('Before Print 2');
+		})
+		.afterPrint(function () {
+			console.log('After Print 2');
+		})
+		.print();
+
+	console.log(test);
+
+</script>
+</body>
+</html>
