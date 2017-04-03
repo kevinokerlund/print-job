@@ -15,6 +15,8 @@ window.DivPrinter = (function () {
 	 */
 	var css = '/*PRINTING DIV CSS*/\n@media print{body.' + CLS.BODY + ' > :not(.' + CLS.PRINT + '),body.' + CLS.BODY + ' .' + CLS.PARENT + ' > :not(.' + CLS.PRINT + '){display: none !important;}}';
 
+	console.log(css);
+
 
 	/**
 	 * New <style> tag to append to <head>

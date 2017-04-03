@@ -1,5 +1,5 @@
 {
-  "name": "print-div",
+  "name": "print-job",
   "version": "1.0.0",
   "description": "Print a single HTML container",
   "main": "index.js",
@@ -11,17 +11,16 @@
     "url": "git+https://github.com/Kevin-Okerlund/print-div.git"
   },
   "author": "Kevin Okerlund",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Kevin-Okerlund/print-div/issues"
   },
   "homepage": "https://github.com/Kevin-Okerlund/print-div#readme",
   "devDependencies": {
-    "gulp": "^3.9.0",
-    "gulp-concat": "^2.6.0",
-    "gulp-jshint": "^1.11.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^1.2.0",
-    "gulp-webserver": "^0.9.1"
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-es2015": "^6.18.0",
+    "webpack": "^1.14.0"
   }
 }
