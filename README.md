@@ -11,12 +11,20 @@ This small JavaScript library prints a single HTML container.
 ## Documentation
 
 
-### Create a new Print Job
+### Print a container
 ```javascript
-let job = new PrintJob('#areaYouWantToPrint');
+PrintJob.print('#areaYouWantToPrint');
 ``` 
 
-### Print the current job
+You can alternatively pass in an element instead of a selector:
 ```javascript
-job.print();
+let element = document.getElementById('areaYouWantToPrint');
+PrintJob.print(element);
 ```
+
+### Upcoming Features
+* Use custom print CSS
+* Lifecycle callbacks
+    * Before print
+    * After print
+* Preset jobs (set up the job and print later)

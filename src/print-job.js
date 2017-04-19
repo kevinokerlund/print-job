@@ -1,120 +1,112 @@
-import {getElement} from './utils';
-
-
-const STYLE_CLASSES = {
-	BODY: '__PRINT_DOM_BODY__',
-	PARENT: '__PRINT_DOM_PARENT__',
-	PRINT: '__PRINT_DOM_PRINT__'
-};
-
-
-const CSS = `
-/*PRINTING DIV CSS*/
-@media print {
-	body.${STYLE_CLASSES.BODY} > :not(.${STYLE_CLASSES.PRINT}),
-	body.${STYLE_CLASSES.BODY} .${STYLE_CLASSES.PARENT} > :not(.${STYLE_CLASSES.PRINT}) {
-		display: none !important;
-	}	
-}
-`.trim();
-
+import {getElement, highestZIndex} from './utils';
 
 const HEAD = document.head || document.getElementsByTagName('head')[0];
 
+const STYLE_CLASSES = {
+	PRINT: '__PRINT_JOB_PRINT__',
+	PARENT: '__PRINT_DOM_PARENT__',
+	PRINT_STYLE: '__PRINT_JOB_MEDIA_CSS__',
+	BLANKET: '__PRINT_JOB_BLANKET__'
+};
 
-const STYLE = HEAD.appendChild(document.createElement('style'));
-STYLE.appendChild(document.createTextNode(CSS));
 
-
-let currentPrinter = null;
-let convertedTextNodes = [];
-
-
-function convertTextNodes(parentNode) {
-	[].slice.call(parentNode.childNodes).forEach(node => {
-		if (node.nodeType === 3) {
-			let temp = document.createElement('span');
-			node.parentNode.replaceChild(temp, node);
-			temp.appendChild(node);
-			convertedTextNodes.push(temp);
+function addCSSToHead(clientWidth) {
+	const zIndex = highestZIndex();
+	const CSS = `
+		/*PRINTING DIV CSS*/
+		@media print {
+			html body .${STYLE_CLASSES.PRINT} {
+				background-color: #fff;
+				position: absolute !important;
+				top: 0;
+				left: 0;
+				min-width: ${clientWidth}px;
+				z-index: ${zIndex + 20};
+			}
+			.${STYLE_CLASSES.BLANKET} {
+				background-color: #fff;
+				position: fixed;
+				top: -100px;
+				right: -100px;
+				bottom: -100px;
+				left: -100px;
+				z-index: ${zIndex + 10};
+			}
+			.${STYLE_CLASSES.PARENT} {
+				position: static !important;
+			}
 		}
-	});
+		`.trim();
+
+	const STYLE = HEAD.appendChild(document.createElement('style'));
+
+	STYLE.id = STYLE_CLASSES.PRINT_STYLE;
+	STYLE.appendChild(document.createTextNode(CSS));
 }
 
 
-function undoTextNodeConversions() {
-	convertedTextNodes.forEach(node => {
-		node.parentNode.replaceChild(node.firstChild, node)
-	});
-	convertedTextNodes = [];
+function removeCSSFromHead() {
+	let style = document.getElementById(STYLE_CLASSES.PRINT_STYLE);
+	style.parentNode.removeChild(style);
 }
 
 
-function beforePrint() {
-	if (currentPrinter) {
-		let node = currentPrinter._source;
-		node.classList.add(STYLE_CLASSES.PRINT);
-
-		while (node.parentNode && node.parentNode !== document.body) {
-			node = node.parentNode;
-			convertTextNodes(node);
-			node.classList.add(STYLE_CLASSES.PARENT);
-			node.classList.add(STYLE_CLASSES.PRINT);
-		}
-
-		convertTextNodes(document.body);
-		document.body.classList.add(STYLE_CLASSES.BODY);
-	}
+function addCoverToBody() {
+	let div = document.createElement('div');
+	div.className = STYLE_CLASSES.BLANKET;
+	document.body.appendChild(div);
 }
 
 
-function afterPrint() {
-	if (currentPrinter) {
-		undoTextNodeConversions();
-		document.body.classList.remove(STYLE_CLASSES.BODY);
-
-		[].slice
-			.call(document.querySelectorAll(`.${STYLE_CLASSES.PARENT}`))
-			.forEach(node => node.classList.remove(STYLE_CLASSES.PARENT));
-
-		[].slice
-			.call(document.querySelectorAll(`.${STYLE_CLASSES.PRINT}`))
-			.forEach(node => node.classList.remove(STYLE_CLASSES.PRINT));
-
-		currentPrinter = null;
-	}
+function removeCoverFromBody() {
+	let test = document.querySelector('.' + STYLE_CLASSES.BLANKET);
+	test.parentNode.removeChild(test);
 }
 
 
-if (window.matchMedia) {
-	window.matchMedia('print').addListener(mql => {
-		if (mql.matches) {
-			beforePrint();
-		}
-		else {
-			afterPrint();
-		}
-	});
-}
-window.addEventListener('beforeprint', beforePrint);
-window.addEventListener('afterprint', afterPrint);
+function beforePrint(node) {
+	let clientWidth = node.clientWidth;
+	let smashedWidth;
+	let oldBodyWidth = document.body.style.width;
+	let oldBodyPosition = document.body.style.position;
 
+	document.body.style.width = '0';
+	document.body.style.position = 'relative';
 
-class PrintJob {
-	constructor(selectorOrDomNode) {
-		this._source = getElement(selectorOrDomNode);
-		this._promise = null;
-		console.log(this._source);
+	smashedWidth = node.clientWidth;
+
+	document.body.style.width = oldBodyWidth;
+	document.body.style.position = oldBodyPosition;
+
+	node.classList.add(STYLE_CLASSES.PRINT);
+
+	while (node.parentNode && node.parentNode !== document.body) {
+		node = node.parentNode;
+		node.classList.add(STYLE_CLASSES.PARENT);
 	}
 
-	print() {
-		if (!currentPrinter) {
-			currentPrinter = this;
-			window.print();
-		}
-		return this;
-	}
+	addCSSToHead(Math.min(clientWidth, smashedWidth));
+	addCoverToBody();
 }
 
 
-export default PrintJob;
+function afterPrint(node) {
+	node.classList.remove(STYLE_CLASSES.PRINT);
+
+	removeCSSFromHead();
+	removeCoverFromBody();
+
+	[].slice
+		.call(document.querySelectorAll(`.${STYLE_CLASSES.PARENT}`))
+		.forEach(node => node.classList.remove(STYLE_CLASSES.PARENT));
+}
+
+
+export default {
+	print(selectorOrDomNode) {
+		const elementToPrint = getElement(selectorOrDomNode);
+		beforePrint(elementToPrint);
+		window.print();
+		afterPrint(elementToPrint);
+	}
+};
