@@ -104,6 +104,9 @@ function afterPrint(node) {
 
 export default {
 	print(selectorOrDomNode) {
+		if (selectorOrDomNode === document.body) {
+			return window.print();
+		}
 		const elementToPrint = getElement(selectorOrDomNode);
 		beforePrint(elementToPrint);
 		window.print();
