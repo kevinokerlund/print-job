@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kevin-Okerlund/print-div.git"
+    "url": "git+https://github.com/Kevin-Okerlund/print-job.git"
   },
   "author": "Kevin Okerlund",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Kevin-Okerlund/print-div/issues"
+    "url": "https://github.com/Kevin-Okerlund/print-job/issues"
   },
-  "homepage": "https://github.com/Kevin-Okerlund/print-div#readme",
+  "homepage": "https://github.com/Kevin-Okerlund/print-job#readme",
   "devDependencies": {
     "babel-core": "^6.21.0",
     "babel-loader": "^6.2.10",
