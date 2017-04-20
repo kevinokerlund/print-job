@@ -1,6 +1,6 @@
 {
   "name": "print-job",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Print a single HTML container",
   "main": "lib/print-job.min.js",
   "scripts": {
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kevin-Okerlund/print-job.git"
+    "url": "git+https://github.com/kevinokerlund/print-job.git"
   },
   "author": "Kevin Okerlund",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Kevin-Okerlund/print-job/issues"
+    "url": "https://github.com/kevinokerlund/print-job/issues"
   },
-  "homepage": "https://github.com/Kevin-Okerlund/print-job#readme",
+  "homepage": "https://github.com/kevinokerlund/print-job#readme",
   "devDependencies": {
     "babel-core": "^6.21.0",
     "babel-loader": "^6.2.10",
