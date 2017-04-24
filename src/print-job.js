@@ -32,7 +32,7 @@ function addCSSToHead(clientWidth, clientHeight) {
 				left: -100px;
 				z-index: ${zIndex + 10};
 			}
-			html body > :not(.${STYLE_CLASSES.PARENT}):not(.${STYLE_CLASSES.BLANKET}) {
+			html body > :not(.${STYLE_CLASSES.PARENT}):not(.${STYLE_CLASSES.BLANKET}):not(.${STYLE_CLASSES.PRINT}) {
 				display: none !important;
 			}
 			.${STYLE_CLASSES.PARENT} {
