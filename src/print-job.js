@@ -1,16 +1,16 @@
-import {getElement, highestZIndex} from './utils';
+import {getElement, highestZIndex, makePrintCss} from './utils';
 
 const HEAD = document.head || document.getElementsByTagName('head')[0];
 
 const STYLE_CLASSES = {
 	PRINT: '__PRINT_JOB_PRINT__',
-	PARENT: '__PRINT_DOM_PARENT__',
+	PARENT: '__PRINT_JOB_PARENT__',
 	PRINT_STYLE: '__PRINT_JOB_MEDIA_CSS__',
 	BLANKET: '__PRINT_JOB_BLANKET__'
 };
 
 
-function addCSSToHead(clientWidth) {
+function addCSSToHead(clientWidth, clientHeight) {
 	const zIndex = highestZIndex();
 	const CSS = `
 		/*PRINTING DIV CSS*/
@@ -32,8 +32,13 @@ function addCSSToHead(clientWidth) {
 				left: -100px;
 				z-index: ${zIndex + 10};
 			}
+			html body > :not(.${STYLE_CLASSES.PARENT}):not(.${STYLE_CLASSES.BLANKET}) {
+				display: none !important;
+			}
 			.${STYLE_CLASSES.PARENT} {
 				position: static !important;
+				max-height: ${clientHeight}px;
+				overflow: hidden !important;
 			}
 		}
 		`.trim();
@@ -66,6 +71,7 @@ function removeCoverFromBody() {
 
 function beforePrint(node) {
 	let clientWidth = node.clientWidth;
+	let clientHeight = node.clientHeight;
 	let smashedWidth;
 	let oldBodyWidth = document.body.style.width;
 	let oldBodyPosition = document.body.style.position;
@@ -85,7 +91,7 @@ function beforePrint(node) {
 		node.classList.add(STYLE_CLASSES.PARENT);
 	}
 
-	addCSSToHead(Math.min(clientWidth, smashedWidth));
+	addCSSToHead(Math.min(clientWidth, smashedWidth), clientHeight);
 	addCoverToBody();
 }
 
