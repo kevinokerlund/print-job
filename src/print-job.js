@@ -91,7 +91,7 @@ function beforePrint(node) {
 		node.classList.add(STYLE_CLASSES.PARENT);
 	}
 
-	addCSSToHead(Math.min(clientWidth, smashedWidth), clientHeight);
+	addCSSToHead(Math.max(clientWidth, smashedWidth), clientHeight);
 	addCoverToBody();
 }
 
