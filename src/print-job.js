@@ -5,7 +5,7 @@ import {IDS, CLASSES, createCSS} from './styles';
 /**
  * Appends a <style> tag containing the PrintJob css to <head>
  *
- * @param args
+ * @param css
  */
 function addCSSToHead(css) {
 	const style = document.head.appendChild(document.createElement('style'));

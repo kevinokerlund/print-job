@@ -2,18 +2,18 @@ import {highestZIndex} from './utils';
 
 
 /**
- * @ToDo
+ * Strings used for various IDs on the page
  *
  * @type {object}
  */
-const IDS = {
+export const IDS = {
 	BLANKET: '__PRINT_JOB_BLANKET__',
 	PRINT_STYLE: '__PRINT_JOB_MEDIA_CSS__'
 };
 
 
 /**
- * @ToDo
+ * Strings used for various classes on the page
  *
  * @type {object}
  */
@@ -24,7 +24,7 @@ export const CLASSES = {
 
 
 /**
- * @ToDo
+ * Create the CSS specific to the element being printed
  *
  * @param printElementWidth
  * @param smashedWidth

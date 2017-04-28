@@ -1,14 +1,23 @@
+/**
+ * Checks to see if the argument is a DOM element
+ *
+ * @param obj
+ * @returns {*|boolean}
+ */
 export function isDom(obj) {
 	return (obj && obj instanceof HTMLElement);
 }
 
-export function getElements(selectorOrNode) {
-	if (isDom(selectorOrNode)) {
-		return [selectorOrNode];
-	}
-	return document.querySelectorAll(selectorOrNode);
-}
 
+/**
+ * Gets an element if a selector is passed.
+ * If an element is passed, then just return the element.
+ * This allows users to print a node directly, or pass in
+ * a selector to find the element
+ *
+ * @param selectorOrNode
+ * @returns {*}
+ */
 export function getElement(selectorOrNode) {
 	if (isDom(selectorOrNode)) {
 		return selectorOrNode;
@@ -16,6 +25,12 @@ export function getElement(selectorOrNode) {
 	return document.querySelector(selectorOrNode);
 }
 
+
+/**
+ * Finds the highest z-index used on the page
+ *
+ * @returns {number}
+ */
 export function highestZIndex() {
 	return Math.max(...[].slice.call(document.querySelectorAll('body *'))
 		.map(el => {
