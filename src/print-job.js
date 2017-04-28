@@ -1,121 +1,110 @@
-import {getElement, highestZIndex, makePrintCss} from './utils';
-
-const HEAD = document.head || document.getElementsByTagName('head')[0];
-
-const STYLE_CLASSES = {
-	PRINT: '__PRINT_JOB_PRINT__',
-	PARENT: '__PRINT_JOB_PARENT__',
-	PRINT_STYLE: '__PRINT_JOB_MEDIA_CSS__',
-	BLANKET: '__PRINT_JOB_BLANKET__'
-};
+import {getElement} from './utils';
+import {IDS, CLASSES, createCSS} from './styles';
 
 
-function addCSSToHead(clientWidth, clientHeight) {
-	const zIndex = highestZIndex();
-	const CSS = `
-		/*PRINTING DIV CSS*/
-		@media print {
-			html body .${STYLE_CLASSES.PRINT} {
-				background-color: #fff;
-				position: absolute !important;
-				top: 0;
-				left: 0;
-				min-width: ${clientWidth}px;
-				z-index: ${zIndex + 20};
-			}
-			.${STYLE_CLASSES.BLANKET} {
-				background-color: #fff;
-				position: fixed;
-				top: -100px;
-				right: -100px;
-				bottom: -100px;
-				left: -100px;
-				z-index: ${zIndex + 10};
-			}
-			html body > :not(.${STYLE_CLASSES.PARENT}):not(.${STYLE_CLASSES.BLANKET}):not(.${STYLE_CLASSES.PRINT}) {
-				display: none !important;
-			}
-			.${STYLE_CLASSES.PARENT} {
-				position: static !important;
-				max-height: ${clientHeight}px;
-				overflow: hidden !important;
-			}
-		}
-		`.trim();
-
-	const STYLE = HEAD.appendChild(document.createElement('style'));
-
-	STYLE.id = STYLE_CLASSES.PRINT_STYLE;
-	STYLE.appendChild(document.createTextNode(CSS));
+/**
+ * Appends a <style> tag containing the PrintJob css to <head>
+ *
+ * @param args
+ */
+function addCSSToHead(css) {
+	const style = document.head.appendChild(document.createElement('style'));
+	style.id = IDS.PRINT_STYLE;
+	style.appendChild(document.createTextNode(css));
 }
 
 
-function removeCSSFromHead() {
-	let style = document.getElementById(STYLE_CLASSES.PRINT_STYLE);
+/**
+ * Removes the PrintJob <style> from the <head>.
+ * We only want these styles applied while jobs from this library are printing, otherwise
+ * printing the whole page could be using the CSS from PrintJob
+ */
+function removeCSSFromhead() {
+	const style = document.getElementById(IDS.PRINT_STYLE);
 	style.parentNode.removeChild(style);
 }
 
 
+/**
+ * Appended to <body>. This sits visibly behind the element to be printed.
+ * It has a background color of white to hide all other content
+ */
 function addCoverToBody() {
 	let div = document.createElement('div');
-	div.className = STYLE_CLASSES.BLANKET;
+	div.id = IDS.BLANKET;
 	document.body.appendChild(div);
 }
 
 
+/**
+ * Removes the element that visually sits behind the element to be printed.
+ * This is removed after every job.
+ */
 function removeCoverFromBody() {
-	let test = document.querySelector('.' + STYLE_CLASSES.BLANKET);
-	test.parentNode.removeChild(test);
+	let blanket = document.getElementById(IDS.BLANKET);
+	blanket.parentNode.removeChild(blanket);
 }
 
 
-function beforePrint(node) {
-	let clientWidth = node.clientWidth;
-	let clientHeight = node.clientHeight;
+/**
+ * Gets the information needed to style surrounding elements.
+ * Prepares the document for printing
+ *
+ * @param elementToPrint
+ */
+function beforePrint(elementToPrint) {
+	const computedStyles = window.getComputedStyle(elementToPrint);
+	const elementWidth = parseInt(computedStyles.width);
+	const elementHeight = elementToPrint.clientHeight;
+	const oldBodyWidth = document.body.style.width;
 	let smashedWidth;
-	let oldBodyWidth = document.body.style.width;
-	let oldBodyPosition = document.body.style.position;
 
-	document.body.style.width = '0';
-	document.body.style.position = 'relative';
-
-	smashedWidth = node.clientWidth;
-
+	document.body.style.width = 0;
+	smashedWidth = parseInt(computedStyles.width);
 	document.body.style.width = oldBodyWidth;
-	document.body.style.position = oldBodyPosition;
 
-	node.classList.add(STYLE_CLASSES.PRINT);
+	elementToPrint.classList.add(CLASSES.PRINT);
 
-	while (node.parentNode && node.parentNode !== document.body) {
-		node = node.parentNode;
-		node.classList.add(STYLE_CLASSES.PARENT);
-	}
-
-	addCSSToHead(Math.max(clientWidth, smashedWidth), clientHeight);
+	addCSSToHead(createCSS(elementWidth, smashedWidth, elementHeight));
 	addCoverToBody();
+
+	while (elementToPrint.parentNode && elementToPrint.parentNode !== document.body) {
+		elementToPrint = elementToPrint.parentNode;
+		elementToPrint.classList.add(CLASSES.PARENT);
+	}
 }
 
 
-function afterPrint(node) {
-	node.classList.remove(STYLE_CLASSES.PRINT);
+/**
+ * Reverses the effects of the beforePrint actions
+ *
+ * @param elementToPrint
+ */
+function afterPrint(elementToPrint) {
+	elementToPrint.classList.remove(CLASSES.PRINT);
 
-	removeCSSFromHead();
+	removeCSSFromhead();
 	removeCoverFromBody();
 
 	[].slice
-		.call(document.querySelectorAll(`.${STYLE_CLASSES.PARENT}`))
-		.forEach(node => node.classList.remove(STYLE_CLASSES.PARENT));
+		.call(document.querySelectorAll(`.${CLASSES.PARENT}`))
+		.forEach(parent => parent.classList.remove(CLASSES.PARENT));
 }
 
 
+/**
+ * Expose static methods
+ */
 export default {
 	print(selectorOrDomNode) {
-		if (selectorOrDomNode === document.body) {
+		const elementToPrint = getElement(selectorOrDomNode);
+
+		if (elementToPrint === document.body) {
 			return window.print();
 		}
-		const elementToPrint = getElement(selectorOrDomNode);
+
 		beforePrint(elementToPrint);
 		window.print();
 		afterPrint(elementToPrint);
 	}
-};
+}
