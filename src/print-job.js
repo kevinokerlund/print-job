@@ -1,5 +1,5 @@
 import {getElement} from './utils';
-import {IDS, CLASSES, createCSS} from './styles';
+import {IDS, CLASSES, createCSS, createImageCSS} from './styles';
 
 
 /**
@@ -93,6 +93,27 @@ function afterPrint(elementToPrint) {
 
 
 /**
+ * Adds the image to the body, and appends the image CSS to <head>
+ *
+ * @param img
+ */
+function beforeImagePrint(img) {
+	document.body.appendChild(img);
+	addCSSToHead(createImageCSS());
+}
+
+
+/**
+ * Reverses the effects of the beforeImagePrint actions
+ * @param img
+ */
+function afterImagePrint(img) {
+	document.body.removeChild(img);
+	removeCSSFromhead();
+}
+
+
+/**
  * Expose static methods
  */
 export default {
@@ -106,5 +127,17 @@ export default {
 		beforePrint(elementToPrint);
 		window.print();
 		afterPrint(elementToPrint);
+	},
+
+	image(url) {
+		const img = document.createElement('img');
+		img['onload'] = () => {
+			beforeImagePrint(img);
+			window.print();
+			afterImagePrint(img);
+		};
+
+		img.id = IDS.IMAGE;
+		img.src = url;
 	}
 }

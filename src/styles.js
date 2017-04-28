@@ -8,7 +8,8 @@ import {highestZIndex} from './utils';
  */
 export const IDS = {
 	BLANKET: '__PRINT_JOB_BLANKET__',
-	PRINT_STYLE: '__PRINT_JOB_MEDIA_CSS__'
+	PRINT_STYLE: '__PRINT_JOB_MEDIA_CSS__',
+	IMAGE: '__PRINT_JOB_IMAGE__'
 };
 
 
@@ -32,9 +33,10 @@ export const CLASSES = {
  * @returns {string}
  */
 export function createCSS(printElementWidth, smashedWidth, printElementHeight) {
+	console.log(printElementWidth, smashedWidth);
 	const zIndex = highestZIndex();
 
-	let maxWidth = '';
+	let maxWidth = 'max-width: 100%;';
 
 	if (printElementWidth === smashedWidth) {
 		maxWidth = `max-width: ${printElementWidth}px;`;
@@ -72,6 +74,32 @@ export function createCSS(printElementWidth, smashedWidth, printElementHeight) {
 			display: none !important;
 		}
 
+	}
+	`;
+}
+
+
+/**
+ * Create the CSS needed to print images
+ *
+ * @returns {string}
+ */
+export function createImageCSS() {
+	return `
+	#${IDS.IMAGE} {
+		display: none;
+		max-width: 100%;
+	}
+	
+	@media print {
+	
+		#${IDS.IMAGE} {
+			display: block;
+		}
+		
+		body > *:not(#${IDS.IMAGE}) {
+			display: none !important;
+		}
 	}
 	`;
 }
