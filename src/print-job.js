@@ -53,20 +53,10 @@ function removeCoverFromBody() {
  * @param elementToPrint
  */
 function beforePrint(elementToPrint) {
-	const computedStyles = window.getComputedStyle(elementToPrint);
-	const elementWidth = parseInt(computedStyles.width);
-	const elementHeight = elementToPrint.clientHeight;
-	const oldBodyWidth = document.body.style.width;
-	let smashedWidth;
-
-	document.body.style.width = 0;
-	smashedWidth = parseInt(computedStyles.width);
-	document.body.style.width = oldBodyWidth;
+	addCSSToHead(createCSS(elementToPrint));
+	addCoverToBody();
 
 	elementToPrint.classList.add(CLASSES.PRINT);
-
-	addCSSToHead(createCSS(elementWidth, smashedWidth, elementHeight));
-	addCoverToBody();
 
 	while (elementToPrint.parentNode && elementToPrint.parentNode !== document.body) {
 		elementToPrint = elementToPrint.parentNode;

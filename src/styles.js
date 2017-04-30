@@ -26,20 +26,38 @@ export const CLASSES = {
 
 /**
  * Create the CSS specific to the element being printed
- *
- * @param printElementWidth
- * @param smashedWidth
- * @param printElementHeight
- * @returns {string}
  */
-export function createCSS(printElementWidth, smashedWidth, printElementHeight) {
-	console.log(printElementWidth, smashedWidth);
+export function createCSS(elementToPrint) {
 	const zIndex = highestZIndex();
+	const originalBodyWidth = document.body.style.width;
+	const originalBodyPosition = document.body.style.position;
 
-	let maxWidth = 'max-width: 100%;';
+	const computedStyles = window.getComputedStyle(elementToPrint);
+	const elementHeight = parseInt(computedStyles.height);
 
-	if (printElementWidth === smashedWidth) {
-		maxWidth = `max-width: ${printElementWidth}px;`;
+	const calculatedWidth = parseInt(computedStyles.width);
+	let difference = Math.abs(calculatedWidth - elementToPrint.offsetWidth);
+	let calculatedMinWidth;
+	let calculatedMaxWidth;
+	let widthString = '';
+
+	document.body.style.position = 'relative';
+	document.body.style.width = '0';
+	calculatedMinWidth = parseInt(computedStyles.width);
+	document.body.style.width = '10000px';
+	calculatedMaxWidth = parseInt(computedStyles.width);
+	document.body.style.width = originalBodyWidth;
+	document.body.style.position = originalBodyPosition;
+
+	if (calculatedWidth === calculatedMinWidth && calculatedWidth === calculatedMaxWidth) {
+		widthString = `width: ${calculatedWidth}px`;
+	}
+	else {
+		widthString = `
+			width: calc(100% - ${difference}px);
+			min-width = ${calculatedMinWidth}px;
+			max-width = ${calculatedMaxWidth}px;
+		`.trim();
 	}
 
 	return `
@@ -50,13 +68,12 @@ export function createCSS(printElementWidth, smashedWidth, printElementHeight) {
 			top: 0 !important;
 			left: 0 !important;
 			z-index: ${zIndex + 20} !important;
-			min-width: ${Math.max(printElementWidth, smashedWidth)}px !important;
-			${maxWidth}
+			${widthString}
 		}
 
 		.${CLASSES.PARENT} {
 			position: static !important;
-			max-height: ${printElementHeight}px !important;
+			max-height: ${elementHeight}px !important;
 			overflow: hidden !important;
 		}
 
