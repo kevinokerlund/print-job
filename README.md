@@ -8,6 +8,23 @@ This small JavaScript library prints a single HTML container.
 * No moving and replacing HTML
 * Preserve styles inherited from parent elements
 
+## Install
+```bash
+npm install --save print-job
+```
+
+## Usage
+
+#### In the browser
+If the library is directly sourced to the window, it operates on the `PrintJob` global variable:
+```javascript
+window.PrintJob
+````
+
+#### In ES6
+```javascript
+import PrintJob from 'print-job';
+```
 
 ## Documentation
 
