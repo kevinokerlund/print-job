@@ -6,6 +6,7 @@ This small JavaScript library prints a single HTML container.
 
 * No popup windows or iFrames
 * No moving and replacing HTML
+* Preserve styles inherited from parent elements
 
 
 ## Documentation
